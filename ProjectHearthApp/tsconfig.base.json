@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@project-hearth/shared": ["libs/shared/src/index.ts"],
+      "@project-hearth/events": ["libs/events/src/index.ts"],
+      "@project-hearth/memory": ["libs/memory/src/index.ts"],
+      "@project-hearth/model-runtime": ["libs/model-runtime/src/index.ts"],
+      "@project-hearth/persistence": ["libs/persistence/src/index.ts"],
+      "@project-hearth/orchestrator": ["libs/orchestrator/src/index.ts"],
+      "@project-hearth/tooling": ["libs/tooling/src/index.ts"]
+    }
+  }
+}
