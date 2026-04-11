@@ -38,14 +38,30 @@ Build one coherent system that unifies orchestration, memory, model runtime abst
    cd ProjectHearthApp
    Copy-Item .env.example .env
    npm install
-   npm run dev:api
    ```
-3. Optional SQL container:
+3. Start API, MCP server, worker, and UI in separate terminals:
+   ```powershell
+   npm run dev:api
+   npm run dev:mcp
+   npm run dev:worker
+   npm run dev:ui
+   ```
+4. Optional SQL container:
    ```powershell
    docker compose -f infra/docker/docker-compose.yml up -d
    ```
-4. Apply SQL bootstrap script `infra/sql/001_bootstrap.sql` using sqlcmd or SSMS.
+5. Apply SQL bootstrap script `infra/sql/001_bootstrap.sql` using sqlcmd or SSMS.
 
+## Gemma 4 local integration
+
+If you added personal Gemma setup instructions under `BaseProjects/gemma-personal`, map your local inference command into `.env`:
+
+```env
+MODEL_PROVIDER=gemma-cli
+GEMMA_INFER_COMMAND=python C:/path/to/your/gemma_infer_script.py
+```
+
+ProjectHearthApp will call `GEMMA_INFER_COMMAND "<prompt>"` through the `GemmaCliProvider` adapter.
 
 ## MVP service surfaces
 
@@ -62,6 +78,22 @@ Build one coherent system that unifies orchestration, memory, model runtime abst
   - `POST /mcp/sql/query-read` (read-only query validation)
   - `GET /mcp/jobs/:taskId`
   - `GET /mcp/filesystem/read?path=...`
+
+## Smoke test commands
+
+```powershell
+# 1) Health
+curl http://localhost:4000/health
+
+# 2) Create task
+$task = Invoke-RestMethod -Method Post -Uri http://localhost:4000/tasks -ContentType "application/json" -Body '{"input":"hello"}'
+
+# 3) Run task
+Invoke-RestMethod -Method Post -Uri "http://localhost:4000/tasks/$($task.taskId)/run"
+
+# 4) Inspect task + events
+Invoke-RestMethod -Method Get -Uri "http://localhost:4000/tasks/$($task.taskId)"
+```
 
 ## Important
 

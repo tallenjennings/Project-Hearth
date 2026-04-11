@@ -1,3 +1,8 @@
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
+
 export type ModelRequest = {
   prompt: string;
   system?: string;
@@ -21,3 +26,31 @@ export class GemmaLocalProvider implements ModelRuntime {
     };
   }
 }
+
+export class GemmaCliProvider implements ModelRuntime {
+  constructor(private readonly inferCommand: string) {}
+
+  async generate(request: ModelRequest): Promise<ModelResponse> {
+    const escapedPrompt = request.prompt.replaceAll('"', '\\"');
+    const command = `${this.inferCommand} \"${escapedPrompt}\"`;
+    const { stdout } = await execAsync(command, { maxBuffer: 1024 * 1024 * 8 });
+
+    return {
+      text: stdout.trim() || "",
+      toolCalls: []
+    };
+  }
+}
+
+export type ModelRuntimeConfig = {
+  provider: string;
+  gemmaInferCommand?: string;
+};
+
+export const createModelRuntime = (config: ModelRuntimeConfig): ModelRuntime => {
+  if (config.provider === "gemma-cli" && config.gemmaInferCommand) {
+    return new GemmaCliProvider(config.gemmaInferCommand);
+  }
+
+  return new GemmaLocalProvider();
+};

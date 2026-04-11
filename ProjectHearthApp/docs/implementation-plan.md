@@ -31,6 +31,8 @@
 - MCP endpoints include health, memory search/write, SQL read-safe query gate, job status, filesystem read sandbox.
 - Worker polls queued tasks and routes them through orchestrator.
 
+- Added environment-driven Gemma CLI provider integration (`MODEL_PROVIDER=gemma-cli`, `GEMMA_INFER_COMMAND=...`) to map personal Win11 Gemma setups into runtime adapter configuration.
+
 ## Borrowed concepts by source
 - `claw-code-main`: orchestration boundaries, provider/tool lifecycle separation.
 - `mempalace-main`: memory category model + local-first retrieval mindset.
