@@ -1,7 +1,6 @@
 import express from "express";
-import { LocalMemoryStore } from "@project-hearth/memory";
-import { InMemoryPersistenceStore } from "@project-hearth/persistence";
-import { loadConfig, logger } from "@project-hearth/shared";
+import { validateReadOnlySql } from "@project-hearth/persistence";
+import { loadConfig, logger, runtimeContainer } from "@project-hearth/shared";
 import { baseToolCatalog } from "@project-hearth/tooling";
 import path from "node:path";
 import fs from "node:fs/promises";
@@ -9,20 +8,18 @@ import fs from "node:fs/promises";
 const app = express();
 app.use(express.json());
 const cfg = loadConfig();
-const memory = new LocalMemoryStore();
-const persistence = new InMemoryPersistenceStore();
 
 app.get("/mcp/tools", (_req, res) => res.json({ tools: baseToolCatalog }));
 app.get("/mcp/health", (_req, res) => res.json({ status: "ok", service: "mcp-server" }));
 
 app.post("/mcp/memory/search", async (req, res) => {
   const q = String(req.body?.query ?? "");
-  const rows = await memory.search(q);
+  const rows = await runtimeContainer.memory.search(q);
   res.json({ records: rows });
 });
 
 app.post("/mcp/memory/write", async (req, res) => {
-  const saved = await memory.write({
+  const saved = await runtimeContainer.memory.write({
     id: crypto.randomUUID(),
     type: req.body?.type ?? "episodic",
     content: String(req.body?.content ?? ""),
@@ -32,11 +29,23 @@ app.post("/mcp/memory/write", async (req, res) => {
 });
 
 app.get("/mcp/jobs/:taskId", async (req, res) => {
-  res.json({ task: await persistence.getTask(req.params.taskId) });
+  const task = await runtimeContainer.persistence.getTask(req.params.taskId);
+  const events = task ? await runtimeContainer.persistence.getTaskEvents(task.taskId) : [];
+  res.json({ task, events });
 });
 
-app.post("/mcp/sql/query-read", async (_req, res) => {
-  res.json({ message: "Read-only SQL surface placeholder. Wire to SQL Server repository next." });
+app.post("/mcp/sql/query-read", async (req, res) => {
+  const query = String(req.body?.query ?? "");
+  const validation = validateReadOnlySql(query);
+  if (!validation.ok) {
+    return res.status(400).json({ error: validation.reason });
+  }
+
+  return res.json({
+    accepted: true,
+    query,
+    message: "Query validated as read-only. SQL Server execution adapter is the next integration step."
+  });
 });
 
 app.get("/mcp/filesystem/read", async (req, res) => {

@@ -39,3 +39,5 @@ export const logger = {
   warn: (message: string, meta?: unknown) => console.warn(`[WARN] ${message}`, meta ?? ""),
   error: (message: string, meta?: unknown) => console.error(`[ERROR] ${message}`, meta ?? "")
 };
+
+export { runtimeContainer } from "./runtime.js";

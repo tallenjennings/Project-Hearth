@@ -46,6 +46,23 @@ Build one coherent system that unifies orchestration, memory, model runtime abst
    ```
 4. Apply SQL bootstrap script `infra/sql/001_bootstrap.sql` using sqlcmd or SSMS.
 
+
+## MVP service surfaces
+
+- API:
+  - `GET /health`
+  - `POST /tasks` (enqueue)
+  - `POST /tasks/:taskId/run` (execute through orchestrator)
+  - `GET /tasks/:taskId` (status + events)
+- MCP server:
+  - `GET /mcp/tools`
+  - `GET /mcp/health`
+  - `POST /mcp/memory/search`
+  - `POST /mcp/memory/write`
+  - `POST /mcp/sql/query-read` (read-only query validation)
+  - `GET /mcp/jobs/:taskId`
+  - `GET /mcp/filesystem/read?path=...`
+
 ## Important
 
 `BaseProjects/*` is treated as **design reference only**. This app is intentionally rewritten with ProjectHearthApp conventions.

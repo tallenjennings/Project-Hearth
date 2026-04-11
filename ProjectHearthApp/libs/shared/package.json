@@ -11,7 +11,11 @@
     "lint": "echo 'No linter configured yet for shared'"
   },
   "dependencies": {
-    "dotenv": "^16.6.1"
+    "dotenv": "^16.6.1",
+    "@project-hearth/memory": "0.1.0",
+    "@project-hearth/model-runtime": "0.1.0",
+    "@project-hearth/orchestrator": "0.1.0",
+    "@project-hearth/persistence": "0.1.0"
   },
   "devDependencies": {
     "tsx": "^4.20.6",

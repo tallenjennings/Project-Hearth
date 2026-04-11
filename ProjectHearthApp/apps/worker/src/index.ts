@@ -1,20 +1,29 @@
 import { InMemoryEventBus, type DomainEvent } from "@project-hearth/events";
-import { InMemoryPersistenceStore } from "@project-hearth/persistence";
-import { loadConfig, logger } from "@project-hearth/shared";
+import { loadConfig, logger, runtimeContainer } from "@project-hearth/shared";
 
 const cfg = loadConfig();
 const bus = new InMemoryEventBus();
-const persistence = new InMemoryPersistenceStore();
 
 bus.subscribe("job.queued", async (event: DomainEvent) => {
-  logger.info("Worker processing queued job", event.payload);
-  // TODO: add indexing/summarization/retry/cleanup pipelines.
+  const payload = event.payload as { taskId?: string } | undefined;
+  const taskId = payload?.taskId;
+  if (!taskId) return;
+
+  const task = await runtimeContainer.persistence.getTask(taskId);
+  if (!task || task.status !== "queued") return;
+
+  logger.info("Worker routing queued task", { taskId });
+  await runtimeContainer.orchestrator.routeTask(task);
 });
 
 setInterval(async () => {
-  const queued = await persistence.getTasksByStatus("queued");
+  const queued = await runtimeContainer.persistence.getTasksByStatus("queued");
   for (const task of queued) {
-    await bus.publish({ type: "job.queued", timestamp: new Date().toISOString(), payload: task });
+    await bus.publish({
+      type: "job.queued",
+      timestamp: new Date().toISOString(),
+      payload: { taskId: task.taskId }
+    });
   }
 }, cfg.workerPollMs);
 

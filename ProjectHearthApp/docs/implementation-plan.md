@@ -1,9 +1,18 @@
 # Implementation Plan
 
 ## Phase 1 — Discovery (completed)
-- Reviewed source snapshots in `BaseProjects`.
-- Extracted architecture ideas only; no runtime reuse.
-- Produced design brief and module plan.
+
+### Observed source patterns in `BaseProjects`
+- `claw-code-main`: strong runtime orchestration boundaries and provider/tool lifecycle decomposition.
+- `mempalace-main`: rich memory semantics and local-first storage/search mindset.
+- `gemma-main`: model adapter focus around Gemma APIs, not full app composition.
+- `modelcontextprotocol-main`: protocol contract discipline and schema-first interfaces.
+- `servers-main`: security-aware reference tool implementations.
+
+### Consolidation decisions
+- Unified on TypeScript-first runtime contracts for API, MCP, worker, and core libs.
+- Introduced adapter interfaces for model/memory/persistence so production backends are swappable.
+- Avoided direct source reuse or folder mirroring from any upstream snapshot.
 
 ## Phase 2 — Architecture (completed)
 - Defined monorepo structure with app/lib/infra separation.
@@ -14,14 +23,13 @@
 - Created orchestrator, memory, model, persistence, events, shared, tooling libraries.
 - Added env template, SQL bootstrap script, docker compose, and startup scripts.
 
-## Phase 4 — MVP first implementation (in progress)
-- API health endpoint and `/tasks` route implemented.
-- Orchestrator stub routes task through memory + model interfaces.
-- Gemma provider placeholder implemented.
-- Memory interfaces + local store implemented.
-- SQL schema bootstrap script implemented.
-- MCP tool catalog and first endpoints implemented.
-- Worker queue polling scaffold implemented.
+## Phase 4 — MVP first implementation (completed for starter pass)
+- API endpoints: task enqueue, task run, task status + events, health.
+- Orchestrator manages lifecycle state transitions and event recording.
+- Memory interface and local placeholder store for episodic/semantic/working/procedural domains.
+- Model runtime interface with Gemma local placeholder provider.
+- MCP endpoints include health, memory search/write, SQL read-safe query gate, job status, filesystem read sandbox.
+- Worker polls queued tasks and routes them through orchestrator.
 
 ## Borrowed concepts by source
 - `claw-code-main`: orchestration boundaries, provider/tool lifecycle separation.
@@ -38,7 +46,7 @@
 
 ## Next steps
 1. Replace in-memory persistence with SQL Server adapter + migrations runner.
-2. Implement durable queue and retry policies for worker.
-3. Add typed MCP protocol envelope and auth/permissions hooks.
-4. Integrate local Gemma runtime process adapter.
-5. Upgrade UI shell to show task list + statuses + memory inspector.
+2. Add task retry policy (`attemptCount`/`maxAttempts`) in worker execution loop.
+3. Add typed MCP JSON-RPC envelope and role-based tool authorization.
+4. Integrate local Gemma runtime process adapter and structured output parsing.
+5. Expand UI shell into task/memory/job dashboard.
