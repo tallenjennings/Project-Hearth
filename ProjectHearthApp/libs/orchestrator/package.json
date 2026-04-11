@@ -1,0 +1,18 @@
+{
+  "name": "@project-hearth/orchestrator",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'No linter configured yet for orchestrator'"
+  },
+  "dependencies": {
+    "@project-hearth/memory": "0.1.0",
+    "@project-hearth/model-runtime": "0.1.0",
+    "@project-hearth/persistence": "0.1.0"
+  },
+  "devDependencies": { "typescript": "^5.9.3" }
+}

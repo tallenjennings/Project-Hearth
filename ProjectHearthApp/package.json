@@ -1,0 +1,22 @@
+{
+  "name": "project-hearth-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Windows-11-first local AI runtime with orchestrator, memory, MCP tools, and SQL Server persistence",
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:api": "npm --workspace @project-hearth/api run dev",
+    "dev:worker": "npm --workspace @project-hearth/worker run dev",
+    "dev:mcp": "npm --workspace @project-hearth/mcp-server run dev",
+    "dev:ui": "npm --workspace @project-hearth/ui run dev",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
