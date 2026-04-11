@@ -1,0 +1,25 @@
+{
+  "name": "@project-hearth/api",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'No linter configured yet for api'"
+  },
+  "dependencies": {
+    "@project-hearth/memory": "0.1.0",
+    "@project-hearth/model-runtime": "0.1.0",
+    "@project-hearth/orchestrator": "0.1.0",
+    "@project-hearth/persistence": "0.1.0",
+    "@project-hearth/shared": "0.1.0",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.23",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
